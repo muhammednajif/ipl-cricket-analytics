@@ -1,0 +1,1 @@
+DROP VIEW IF EXISTS v_matches_season_clean; CREATE VIEW v_matches_season_clean AS SELECT    *,    CAST(SUBSTR(season, 1, 4) AS INTEGER) AS season_year FROM matches;
