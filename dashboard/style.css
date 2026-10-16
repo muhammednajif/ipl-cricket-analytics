@@ -49,19 +49,41 @@ div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stPlotlyChart"]
 .nav-stat b { font-variant-numeric: tabular-nums; background: var(--paper);
     border: 1.5px solid #111111; border-radius: 3px; padding: 0 7px; }
 .export-gap { height: 18px; }
-/* Sidebar nav: radio restyled as stacked brutalist buttons; checked item is green */
-div[data-testid="stRadio"] [role="radiogroup"] { flex-direction: column; align-items: stretch; gap: 8px; }
-div[data-testid="stRadio"] label[data-baseweb="radio"] { margin: 0; padding: 10px 12px;
-    border: 2px solid #111111; border-radius: 3px; background: #FFFFFF; color: #111111;
-    box-shadow: 3px 3px 0 #111111; font-weight: 600; cursor: pointer;
+/* Sidebar nav: two custom buttons (no st.radio). Scoped by widget key —
+   Streamlit renders .st-key-<key> on each widget's own container, so these
+   selectors can never leak onto other buttons. No !important needed:
+   (0,2,1) beats Streamlit's single-class Emotion styles. */
+.st-key-nav_overview button,
+.st-key-nav_match button {
+    width: 100%; min-height: 44px; height: 44px; padding: 10px 12px;
+    display: flex; align-items: center; justify-content: flex-start; gap: 8px;
+    border: 2px solid #111111; border-radius: 4px;
+    background: #FFFFFF; color: #111111;
+    box-shadow: 4px 4px 0 #111111;
+    font-size: 14px; font-weight: 600; text-align: left;
     transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease); }
-div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child { display: none; }
-div[data-testid="stRadio"] label[data-baseweb="radio"] p { margin: 0; font-size: 14px; }
-div[data-testid="stRadio"] label[data-baseweb="radio"]:hover { transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 #111111; }
-div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) { background: #7BE0B2;
-    font-weight: 800; box-shadow: 4px 4px 0 #111111; }
-div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) p { color: #111111; font-weight: 800; }
+.st-key-nav_overview button:hover,
+.st-key-nav_match button:hover {
+    transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #111111; }
+/* Keep the black outline while a nav button holds focus after being clicked
+   (beats Streamlit's theme focus border on specificity, no !important). */
+.st-key-nav_overview button:focus,
+.st-key-nav_match button:focus,
+.st-key-nav_overview button:focus-visible,
+.st-key-nav_match button:focus-visible {
+    border-color: #111111; outline: 2px solid #111111; outline-offset: 2px; }
+/* ACTIVE tab: type="primary" renders as button[data-testid="stBaseButton-primary"].
+   Python flips the type every rerun, so exactly one tab is mint at a time. */
+.st-key-nav_overview button[data-testid="stBaseButton-primary"],
+.st-key-nav_match button[data-testid="stBaseButton-primary"] {
+    background: #7BE0B2; color: #111111; font-weight: 800; }
+/* Tighten stack gap between the two nav buttons to match reference (~10px). */
+.st-key-nav_overview + .st-key-nav_match {
+    margin-top: -10px; }
+/* Collapse/expand chevron stays a small square; key-scoped, never touches nav. */
+.st-key-side_toggle button {
+    width: 36px; min-height: 36px; height: 36px; padding: 0;
+    justify-content: center; font-size: 18px; line-height: 1; box-shadow: var(--sh-sm); }
 /* ---------- Headings ---------- */
 .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .18em; color: var(--muted); }
 .page-title { font-size: 37px; font-weight: 900; letter-spacing: -.03em; line-height: 1.05; margin: 4px 0 0;
@@ -109,14 +131,16 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px;
     background: var(--red); color: #FFFDF8; border: 1.5px solid #111111; border-radius: 3px;
     padding: 1px 6px; margin-left: 8px; vertical-align: 1px; }
 /* ---------- Buttons / inputs / selects ---------- */
-div[data-testid="stButton"] button, div[data-testid="stDownloadButton"] button {
+/* NOTE: the two sidebar nav widgets (.st-key-nav_overview / .st-key-nav_match)
+   are excluded here so their own scoped rules below fully control them. */
+div[data-testid="stElementContainer"]:not(.st-key-nav_overview):not(.st-key-nav_match) div[data-testid="stButton"] button, div[data-testid="stDownloadButton"] button {
     border: var(--bd) !important; border-radius: 3px !important;
     background: var(--card) !important; color: #111111 !important;
     font-weight: 800 !important; box-shadow: var(--sh-sm) !important;
     transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease); }
-div[data-testid="stButton"] button:hover, div[data-testid="stDownloadButton"] button:hover {
+div[data-testid="stElementContainer"]:not(.st-key-nav_overview):not(.st-key-nav_match) div[data-testid="stButton"] button:hover, div[data-testid="stDownloadButton"] button:hover {
     transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #111111 !important; }
-div[data-testid="stButton"] button:active, div[data-testid="stDownloadButton"] button:active {
+div[data-testid="stElementContainer"]:not(.st-key-nav_overview):not(.st-key-nav_match) div[data-testid="stButton"] button:active, div[data-testid="stDownloadButton"] button:active {
     transform: translate(2px, 2px); box-shadow: 1px 1px 0 #111111 !important; }
 div[data-testid="stButton"] button:focus-visible,
 div[data-testid="stDownloadButton"] button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
@@ -224,8 +248,10 @@ div[data-testid="column"]:has(.rail-on) div[data-testid="stButton"] {
     display: flex;
     justify-content: center;
 }
-/* Toggle is the only stButton app-wide: small square chevron box, fade on mount */
-div[data-testid="stButton"] button { animation: sideFade 250ms ease both; width: 36px; height: 36px;
+/* Collapse/expand chevron only: small square box, fade on mount */
+.st-key-side_toggle button,
+div[data-testid="column"]:has(.rail-on) div[data-testid="stButton"] button {
+    animation: sideFade 250ms ease both; width: 36px; height: 36px;
     min-height: 36px; padding: 0; font-size: 18px; line-height: 1; }
 @keyframes sideFade { from { opacity: 0; } to { opacity: 1; } }
 .brand { animation: sideFade 250ms ease both; }

@@ -13,7 +13,6 @@ __pycache__/
 data/raw/*.csv
 data/raw/*.db
 data/processed/*.csv
-data/processed/*.db
 
 # General database files
 *.db

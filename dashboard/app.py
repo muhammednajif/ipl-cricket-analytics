@@ -78,12 +78,8 @@ def goto(page: str):
     st.session_state["page"] = page
     st.query_params["page"] = page
 
-def _nav_go():
-    goto("Match" if "Match Analysis" in st.session_state["nav_radio"] else "Overview")
-
 def toggle_side():
     st.session_state["side_open"] = not st.session_state.get("side_open", True)
-    st.session_state.pop("nav_radio", None)
 
 def season_report_csv() -> bytes:
     df = query("""
@@ -224,7 +220,7 @@ def style_fig(fig, height: int, show_legend: bool):
     return fig
 
 def chart(df, x, y, key, kind="Bar", color=None, height=300, ref_line=None, y_range=None,
-          text_col=None, x_title="", y_title=""):
+          text_col=None, x_title="", y_title="", x_categorical=False):
     if df.empty:
         st.markdown('<div class="empty">No data for this selection.</div>', unsafe_allow_html=True)
         return
@@ -258,6 +254,15 @@ def chart(df, x, y, key, kind="Bar", color=None, height=300, ref_line=None, y_ra
         else:
             fig.update_xaxes(title_text=x_title)
             fig.update_yaxes(title_text=y_title)
+    if x_categorical and not horizontal:
+        # Season labels look numeric ("2019"…) so Plotly would sniff a linear
+        # axis and stretch gaps for missing seasons. Pin to the observed
+        # categories in query order: equal spacing, no invented seasons.
+        fig.update_xaxes(
+            type="category",
+            categoryorder="array",
+            categoryarray=data[x].astype(str).tolist(),
+        )
     style_fig(fig, height, show_legend=color is not None)
     st.plotly_chart(fig, **STRETCH, config={"displayModeBar": False, "displaylogo": False},
                     key=f"{key}_plot")
@@ -299,9 +304,13 @@ def sidebar(active: str, counts: dict):
         with tcol:
             st.button("‹", key="side_toggle", help="Collapse sidebar",
                       on_click=toggle_side)
-        cur = 0 if active == "Overview" else 1
-        st.radio("Section", ["◫  Overview", "○  Match Analysis"], index=cur,
-                 key="nav_radio", label_visibility="collapsed", on_change=_nav_go)
+        cur_is_overview = (active == "Overview")
+        st.button("◫  Overview", key="nav_overview",
+                  type="primary" if cur_is_overview else "secondary",
+                  on_click=goto, args=("Overview",), **STRETCH)
+        st.button("○  Match Analysis", key="nav_match",
+                  type="primary" if not cur_is_overview else "secondary",
+                  on_click=goto, args=("Match",), **STRETCH)
         st.markdown(
             '<div class="nav-group">DATA</div>'
             f'<div class="nav-stat"><span>Seasons</span><b>{counts["seasons"]}</b></div>'
@@ -397,7 +406,7 @@ def draw_overview():
             """, tuple(params) + tuple(window))
             avg_scores["season"] = avg_scores["season"].astype(str)
             chart(avg_scores, "season", "avg_score", "ov_trend", kind="Line", height=330,
-                  x_title="Season", y_title="Average runs")
+                  x_title="Season", y_title="Average runs", x_categorical=True)
         with st.container(border=True):
             chase_view = chart_head("Chase Win Rate by Target",
                                     "Win percentage by first-innings band.", "ov_chase",
