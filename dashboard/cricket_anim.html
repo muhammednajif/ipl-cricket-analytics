@@ -1,0 +1,135 @@
+<div class="ck-stage" aria-label="Cricket bat juggling animation">
+  <img class="ck-bat" id="ck-bat-__UID__" src="__BAT__" alt="Cricket bat">
+  <img class="ck-ball" id="ck-ball-__UID__" src="__BALL__" alt="Red cricket ball">
+</div>
+<style>
+  .ck-stage {
+    position: relative;
+    width: 100%;
+    height: 236px;
+    overflow: hidden;
+    background: transparent;
+    isolation: isolate;
+  }
+  .ck-stage .ck-bat {
+    position: absolute;
+    left: 8%;
+    top: 7%;
+    width: min(76%, 240px);
+    height: auto;
+    object-fit: contain;
+    transform-origin: 95% 8%;
+    will-change: transform;
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+  }
+  .ck-stage .ck-ball {
+    position: absolute;
+    width: clamp(24px, 17%, 44px);
+    height: auto;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    will-change: left, top, transform;
+    pointer-events: none;
+    user-select: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ck-stage .ck-bat, .ck-stage .ck-ball { will-change: auto; }
+  }
+</style>
+<script>
+  (() => {
+    const uid = "__UID__";
+    const stage = document.querySelector(".ck-stage");
+    const bat = document.getElementById("ck-bat-" + uid);
+    const ball = document.getElementById("ck-ball-" + uid);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const BAT_TOE = { x: 0.025, y: 0.925 };
+    const PIVOT = { x: 0.95, y: 0.08 };
+    const LOOP_MS = 1650;
+    let startTime = null, raf = null, visible = true;
+
+    function getToe() {
+      const stageRect = stage.getBoundingClientRect();
+      const width = bat.offsetWidth, height = bat.offsetHeight;
+      const left = parseFloat(getComputedStyle(bat).left);
+      const top = parseFloat(getComputedStyle(bat).top);
+      const px = PIVOT.x * width, py = PIVOT.y * height;
+      const dx = BAT_TOE.x * width - px, dy = BAT_TOE.y * height - py;
+      return {
+        x: left + px + dx, y: top + py + dy,
+        stageW: stageRect.width, stageH: stageRect.height
+      };
+    }
+
+    function frame(now) {
+      if (!visible) { raf = null; return; }
+      if (reduceMotion.matches) {
+        bat.style.transform = "rotate(0deg)";
+        ball.style.left = "22%";
+        ball.style.top = "55%";
+        return;
+      }
+      if (startTime === null) startTime = now;
+      const phase = ((now - startTime) % LOOP_MS) / LOOP_MS;
+      // Upward flick synced to impact: the ball touches the blade at phase 0/1.
+      // Clockwise (+) rotation about the handle pivot lifts the blade tip up.
+      let angleDeg = 0;
+      if (phase >= 0.90) {
+        // Just before contact: accelerating upward flick, fastest at impact.
+        const w = (phase - 0.90) / 0.10;
+        angleDeg = 7.5 * w * w;
+      } else if (phase < 0.10) {
+        // Follow-through: still up at contact, then ease back to ready
+        // while the ball rises. Never negative (never downward).
+        const f = phase / 0.10;
+        angleDeg = 7.5 * (1 - f) * (1 - f);
+      }
+      bat.style.transform = "rotate(" + angleDeg + "deg)";
+      const toe = getToe();
+      const ballWidth = ball.offsetWidth || 36, ballHeight = ball.offsetHeight || 36;
+      const contactX = toe.x + ballWidth * 0.22;
+      const contactY = toe.y - ballHeight * 0.62;
+      const arc = Math.sin(Math.PI * phase);
+      const lift = Math.min(toe.stageH * 0.42, 120);
+      const drift = Math.sin(Math.PI * phase) * toe.stageW * 0.05;
+      // Hard containment: the ball can never leave the stage.
+      const x = Math.max(0, Math.min(contactX + drift - ballWidth / 2,
+        toe.stageW - ballWidth));
+      const y = Math.max(0, Math.min(contactY - lift * arc - ballHeight / 2,
+        toe.stageH - ballHeight));
+      ball.style.left = x + "px";
+      ball.style.top = y + "px";
+      const spin = phase * 420;
+      const dImpact = Math.min(phase, 1 - phase);
+      const squash = dImpact < 0.035 ? 1 - 0.07 * (1 - dImpact / 0.035) : 1;
+      ball.style.transform =
+        "rotate(" + spin + "deg) scale(" + (1 + (1 - squash) * 0.55) + ", " + squash + ")";
+      raf = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (raf) cancelAnimationFrame(raf);
+      startTime = null;
+      if (visible && !reduceMotion.matches) raf = requestAnimationFrame(frame);
+    }
+
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((entries) => {
+        visible = entries[0].isIntersecting;
+        if (visible) start();
+      }).observe(stage);
+    }
+
+    Promise.all([
+      new Promise((resolve) => bat.complete ? resolve() : bat.addEventListener("load", resolve, { once: true })),
+      new Promise((resolve) => ball.complete ? resolve() : ball.addEventListener("load", resolve, { once: true }))
+    ]).then(start);
+    window.addEventListener("resize", start);
+    if (typeof reduceMotion.addEventListener === "function") {
+      reduceMotion.addEventListener("change", start);
+    }
+  })();
+</script>

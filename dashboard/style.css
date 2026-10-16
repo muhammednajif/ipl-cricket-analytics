@@ -1,0 +1,268 @@
+/* ============================================================
+   IPL CRICKET ANALYTICS — Neobrutalist admin (v6)
+   Cream #F7F6F2 · 2px #111 outlines · 5px hard shadows · 4px max.
+   ============================================================ */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+:root {
+    --page: #F7F6F2; --surface: #FFFDF8; --card: #FFFFFF; --ink: #111111;
+    --muted: #595959; --red: #FF4545; --blue: #4D63F5; --yellow: #FFD426;
+    --mint: #7BE0B2; --paper: #F1F0EB; --grid: #E7E5DF;
+    --green: #159B66; --neg: #F04444;
+    --bd: 2px solid #111111; --r: 4px; --sh: 5px 5px 0 #111111; --sh-sm: 3px 3px 0 #111111;
+    --font: "Inter", Arial, ui-sans-serif, system-ui, sans-serif;
+    --ease: cubic-bezier(.2, .7, .3, 1);
+}
+/* ---------- Base ---------- */
+html, body, [data-testid="stAppViewContainer"], [data-testid="stApp"] {
+    background: var(--page); color: var(--ink); font-family: var(--font); color-scheme: light; }
+[data-testid="stMarkdownContainer"] p, label, button, input, textarea { font-family: var(--font); }
+header[data-testid="stHeader"] { background: transparent; }
+[data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer { visibility: hidden; }
+[data-testid="stSidebarCollapsedControl"], [data-testid="stExpandSidebarButton"] { visibility: visible; }
+[data-testid="stAppViewContainer"] .main .block-container,
+[data-testid="stMainBlockContainer"] { max-width: 1400px; padding: 24px 28px 40px; }
+[data-testid="stVerticalBlock"] { gap: 16px; }
+/* App shell */
+.shell { background: var(--surface); border: var(--bd); border-radius: 6px;
+    box-shadow: 7px 7px 0 #111111; padding: 20px 22px; }
+/* Every bordered container = brutalist panel */
+div[data-testid="stVerticalBlockBorderWrapper"] { background: var(--card); border: var(--bd);
+    border-radius: var(--r); box-shadow: var(--sh); padding: 16px 18px; }
+/* Plotly lives inside panels: strip its own box */
+div[data-testid="stVerticalBlockBorderWrapper"] div[data-testid="stPlotlyChart"] {
+    border: 0; box-shadow: none; border-radius: 0; }
+/* ---------- Sidebar ---------- */
+.brand { display: flex; align-items: center; gap: 14px; padding: 6px 4px 16px;
+    border-bottom: var(--bd); margin-bottom: 4px; }
+.brand-tile { width: 56px; height: 56px; background: var(--red); border: var(--bd);
+    border-radius: var(--r); box-shadow: var(--sh-sm); display: grid; place-items: center;
+    font-size: 28px; font-weight: 900; color: #111111; }
+.brand-name { display: block; font-size: 19px; font-weight: 900; letter-spacing: .02em; line-height: 1.15; }
+.brand-sub { display: block; font-size: 11px; font-weight: 700; letter-spacing: .14em; color: var(--muted); margin-top: 3px; }
+.nav-group { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; color: var(--muted);
+    margin: 12px 0 6px; padding-top: 10px; border-top: 2px solid #111111; }
+.nav-group:first-of-type { border-top: 0; padding-top: 0; }
+/* Fresh-mount fade for sidebar text (expand + first load; silent on reruns) */
+.nav-group, .nav-stat { animation: sideFade 220ms ease both; }
+.nav-stat { display: flex; justify-content: space-between; align-items: center;
+    font-size: 12.5px; font-weight: 600; padding: 6px 2px; border-bottom: 1px dashed var(--grid); }
+.nav-stat b { font-variant-numeric: tabular-nums; background: var(--paper);
+    border: 1.5px solid #111111; border-radius: 3px; padding: 0 7px; }
+.export-gap { height: 18px; }
+/* Sidebar nav: radio restyled as stacked brutalist buttons; checked item is green */
+div[data-testid="stRadio"] [role="radiogroup"] { flex-direction: column; align-items: stretch; gap: 8px; }
+div[data-testid="stRadio"] label[data-baseweb="radio"] { margin: 0; padding: 10px 12px;
+    border: 2px solid #111111; border-radius: 3px; background: #FFFFFF; color: #111111;
+    box-shadow: 3px 3px 0 #111111; font-weight: 600; cursor: pointer;
+    transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease); }
+div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child { display: none; }
+div[data-testid="stRadio"] label[data-baseweb="radio"] p { margin: 0; font-size: 14px; }
+div[data-testid="stRadio"] label[data-baseweb="radio"]:hover { transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0 #111111; }
+div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) { background: #7BE0B2;
+    font-weight: 800; box-shadow: 4px 4px 0 #111111; }
+div[data-testid="stRadio"] label[data-baseweb="radio"]:has(input:checked) p { color: #111111; font-weight: 800; }
+/* ---------- Headings ---------- */
+.eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .18em; color: var(--muted); }
+.page-title { font-size: 37px; font-weight: 900; letter-spacing: -.03em; line-height: 1.05; margin: 4px 0 0;
+    color: #111111; }
+.page-sub { margin-top: 6px; font-size: 14px; font-weight: 500; color: var(--muted); }
+.panel-title { font-size: 16px; font-weight: 800; letter-spacing: -.01em; }
+.panel-sub { font-size: 12.5px; color: var(--muted); margin: 1px 0 6px; }
+.fld { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; margin-bottom: 6px; }
+.empty { border: var(--bd); border-radius: var(--r); background: var(--paper);
+    padding: 14px 16px; font-size: 13px; font-weight: 600; }
+.callout { border: var(--bd); border-radius: var(--r); background: var(--yellow);
+    padding: 8px 12px; font-size: 12.5px; font-weight: 600; margin-top: 8px; }
+/* ---------- KPI cards ---------- */
+.kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 16px 0 4px; }
+.kpi { display: flex; gap: 14px; align-items: flex-start; background: var(--card);
+    border: var(--bd); border-radius: var(--r); box-shadow: var(--sh); padding: 18px;
+    min-height: 128px; transition: transform .15s var(--ease), box-shadow .15s var(--ease); }
+.kpi:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #111111; }
+.kpi-tile { flex-shrink: 0; width: 44px; height: 44px; border: var(--bd); border-radius: var(--r);
+    box-shadow: var(--sh-sm); }
+.kpi-txt { display: flex; flex-direction: column; min-width: 0; }
+.kpi-label { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; }
+.kpi-value { margin-top: 4px; font-size: 31px; font-weight: 900; letter-spacing: -.02em;
+    line-height: 1.1; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi-support { margin-top: 4px; font-size: 12px; color: var(--muted); font-weight: 500; }
+/* ---------- Search hit rows ---------- */
+.hit { display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+    padding: 8px 2px; border-bottom: 1px dashed var(--grid); font-size: 13.5px; }
+.hit span { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+/* ---------- Tables ---------- */
+.tbl-wrap { border: var(--bd); border-radius: var(--r); box-shadow: var(--sh);
+    background: var(--card); overflow-x: auto; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px;
+    font-variant-numeric: tabular-nums; }
+.tbl thead th { text-align: right; font-size: 11px; font-weight: 800; letter-spacing: .06em;
+    text-transform: uppercase; padding: 10px 12px; border-bottom: var(--bd);
+    background: var(--paper); white-space: nowrap; }
+.tbl thead th:first-child, .tbl tbody td.pn { text-align: left; }
+.tbl tbody td { text-align: right; padding: 7px 12px; border-bottom: 1px solid var(--grid);
+    white-space: nowrap; }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl tbody tr { transition: background .15s var(--ease); }
+.tbl tbody tr:hover { background: #FFF6D6; }
+.potm { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .06em;
+    background: var(--red); color: #FFFDF8; border: 1.5px solid #111111; border-radius: 3px;
+    padding: 1px 6px; margin-left: 8px; vertical-align: 1px; }
+/* ---------- Buttons / inputs / selects ---------- */
+div[data-testid="stButton"] button, div[data-testid="stDownloadButton"] button {
+    border: var(--bd) !important; border-radius: 3px !important;
+    background: var(--card) !important; color: #111111 !important;
+    font-weight: 800 !important; box-shadow: var(--sh-sm) !important;
+    transition: transform .15s var(--ease), box-shadow .15s var(--ease), background .15s var(--ease); }
+div[data-testid="stButton"] button:hover, div[data-testid="stDownloadButton"] button:hover {
+    transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #111111 !important; }
+div[data-testid="stButton"] button:active, div[data-testid="stDownloadButton"] button:active {
+    transform: translate(2px, 2px); box-shadow: 1px 1px 0 #111111 !important; }
+div[data-testid="stButton"] button:focus-visible,
+div[data-testid="stDownloadButton"] button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+div[data-baseweb="select"] > div, div[data-baseweb="input"] > div {
+    background: var(--card) !important; border: var(--bd) !important; border-radius: 3px !important;
+    min-height: 42px; font-weight: 600; box-shadow: var(--sh-sm);
+    transition: box-shadow .15s var(--ease); }
+div[data-baseweb="select"] > div:focus-within, div[data-baseweb="input"] > div:focus-within {
+    outline: 2px solid var(--blue); outline-offset: 1px; }
+div[data-testid="stTextInput"] input { font-weight: 600; }
+div[data-testid="stSpinner"] > div { border-top-color: var(--red) !important; }
+.footer { margin-top: 20px; padding-top: 12px; border-top: var(--bd); font-size: 12px;
+    font-weight: 600; color: var(--muted); }
+/* ---------- Responsive ---------- */
+@media (max-width: 1000px) { .kpi-grid { grid-template-columns: 1fr; } .kpi { min-height: 0; } }
+@media (max-width: 900px) {
+    [data-testid="stAppViewContainer"] .main .block-container,
+    [data-testid="stMainBlockContainer"] { padding: 12px 10px 28px; }
+    .shell { padding: 12px; box-shadow: 4px 4px 0 #111111; }
+    .page-title { font-size: 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ===== BRUTALIST DASHBOARD — SPACING FIX ===== */
+/* Main page padding */
+[data-testid="stMainBlockContainer"],
+[data-testid="stAppViewContainer"] .main .block-container {
+    padding: 28px 32px 48px !important;
+    max-width: 1500px !important;
+}
+
+/* Consistent vertical spacing between Streamlit elements */
+[data-testid="stVerticalBlock"] {
+    gap: 20px !important;
+}
+
+/* Space between sidebar and main content */
+[data-testid="stHorizontalBlock"] {
+    gap: 22px !important;
+    align-items: flex-start;
+}
+
+/* Sidebar content spacing */
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    gap: 12px !important;
+}
+
+/* Space between page heading and filters */
+.eyebrow {
+    margin-bottom: 8px !important;
+}
+
+.page-title {
+    margin: 8px 0 0 !important;
+}
+
+.page-sub {
+    margin: 10px 0 16px !important;
+}
+
+/* Filter panel */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    padding: 18px 20px !important;
+    margin-bottom: 4px !important;
+}
+
+/* Filter columns */
+[data-testid="stVerticalBlockBorderWrapper"] [data-testid="stHorizontalBlock"] {
+    gap: 18px !important;
+}
+
+/* KPI cards */
+.kpi-grid {
+    gap: 20px !important;
+    margin: 20px 0 8px !important;
+}
+
+.kpi {
+    padding: 20px !important;
+    min-height: 132px !important;
+}
+
+/* Space between chart columns + smooth collapse glide (nodes persist, widths ease) */
+[data-testid="stHorizontalBlock"] > [data-testid="column"] {
+    min-width: 0;
+    overflow: hidden;
+    transition: flex 250ms ease, flex-grow 250ms ease, flex-shrink 250ms ease,
+        flex-basis 250ms ease, width 250ms ease, max-width 250ms ease, min-width 250ms ease;
+}
+/* Collapsed rail: bare column, no box — shrunk via marker, width glides */
+.rail-on { display: none; }
+@media (min-width: 901px) {
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:has(.rail-on) {
+        flex: 0 0 60px !important;
+        max-width: 60px !important;
+        min-width: 60px !important;
+    }
+}
+div[data-testid="column"]:has(.rail-on) [data-testid="stVerticalBlock"] {
+    gap: 0;
+}
+div[data-testid="column"]:has(.rail-on) div[data-testid="stButton"] {
+    display: flex;
+    justify-content: center;
+}
+/* Toggle is the only stButton app-wide: small square chevron box, fade on mount */
+div[data-testid="stButton"] button { animation: sideFade 250ms ease both; width: 36px; height: 36px;
+    min-height: 36px; padding: 0; font-size: 18px; line-height: 1; }
+@keyframes sideFade { from { opacity: 0; } to { opacity: 1; } }
+.brand { animation: sideFade 250ms ease both; }
+.brand-name, .brand-sub { white-space: nowrap; }
+
+/* Chart panels */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    margin-bottom: 8px !important;
+}
+
+/* Panel headings */
+.panel-title {
+    margin-bottom: 6px !important;
+}
+
+.panel-sub {
+    margin-bottom: 12px !important;
+}
+
+/* Inputs and dropdowns */
+div[data-baseweb="select"] > div,
+div[data-baseweb="input"] > div {
+    min-height: 44px !important;
+}
+
+/* Responsive spacing */
+@media (max-width: 900px) {
+    [data-testid="stMainBlockContainer"],
+    [data-testid="stAppViewContainer"] .main .block-container {
+        padding: 18px 14px 32px !important;
+    }
+
+    [data-testid="stHorizontalBlock"] {
+        gap: 14px !important;
+    }
+
+    .kpi-grid {
+        gap: 14px !important;
+    }
+}
